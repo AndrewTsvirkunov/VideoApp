@@ -15,6 +15,13 @@ from users.models import AppUser
 
 # GET /v1/videos/{id}/
 class VideoRetrieveView(generics.RetrieveAPIView):
+    """
+    Получение одного видео по id.
+
+    Возвращает видео, если оно опубликовано, либо
+    если пользователь владеет этим видео.
+    Для staff доступны все видео.
+    """
     serializer_class = VideoSerializer
 
     def get_queryset(self):
@@ -29,6 +36,13 @@ class VideoRetrieveView(generics.RetrieveAPIView):
 
 # GET /v1/videos/  (paginate)
 class VideoListView(generics.ListAPIView):
+    """
+    Список видео с пагинацией.
+
+    Для анонимных — только опубликованные.
+    Для аутентифицированных — опубликованные + свои.
+    Для staff — все видео.
+    """
     serializer_class = VideoSerializer
 
     def get_queryset(self):
@@ -43,6 +57,11 @@ class VideoListView(generics.ListAPIView):
 
 # GET /v1/videos/ids/   (admin only, no pagination)
 class VideoIDsView(views.APIView):
+    """
+    Список id опубликованных видео.
+
+    Доступно только администраторам, без пагинации.
+    """
     permission_classes = [IsAdminUser]
 
     def get(self, request):
@@ -52,6 +71,14 @@ class VideoIDsView(views.APIView):
 
 # POST/DELETE /v1/videos/{video_id}/likes/
 class LikeToggleView(views.APIView):
+    """
+    Управление лайками на видео.
+
+    POST: поставить лайк на опубликованное видео.
+    DELETE: удалить лайк.
+    Подсчет лайков обновляет поле total_likes атомарно.
+    Доступно только авторизованным пользователям.
+    """
     permission_classes = [IsAuthenticated]
 
     @transaction.atomic
@@ -84,6 +111,12 @@ class LikeToggleView(views.APIView):
 
 # /v1/videos/statistics-subquery/  (admins only)
 class StatisticsSubqueryView(views.APIView):
+    """
+    Статистика лайков видео по пользователям.
+
+    Для админов.
+    Использует Subquery для агрегации лайков по видео каждого пользователя.
+    """
     permission_classes = [IsAdminUser]
 
     def get(self, request):
@@ -106,6 +139,12 @@ class StatisticsSubqueryView(views.APIView):
 
 # /v1/videos/statistics-group-by/  (admins only)
 class StatisticsGroupByView(views.APIView):
+    """
+    Альтернативная статистика лайков с использованием group by.
+
+    Для админов.
+    Агрегирует общее количество лайков по опубликованным видео пользователей.
+    """
     permission_classes = [IsAdminUser]
 
     def get(self, request):

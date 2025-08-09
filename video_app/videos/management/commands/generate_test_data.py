@@ -4,7 +4,19 @@ from videos.models import Video
 import random
 
 class Command(BaseCommand):
-    help = 'Fast generate 10k users and 100k published videos'
+    """
+       Management-команда для генерации тестовых данных.
+
+       Создаёт:
+           - 10 000 пользователей
+           - 100 000 видео (is_published=True)
+
+       Оптимизировано для минимизации числа запросов в базу данных:
+           - Пользователи создаются батчами через bulk_create
+           - Видео создаются батчами по 1000 штук
+       """
+
+    help = "Генерирует тестовые данные: 10k пользователей и 100k видео."
 
     def handle(self, *args, **options):
         self.stdout.write('Creating users...')
