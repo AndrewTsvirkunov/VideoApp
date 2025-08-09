@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Django collected static files
+staticfiles/
+
+# Uploaded media
+media/
+
+# IDE settings
+.idea/
